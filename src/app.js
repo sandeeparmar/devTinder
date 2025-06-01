@@ -2,25 +2,44 @@ const express = require("express") ;
 
 const app = express() ; // create an express application
 
-app.use( "/sandeepParmar", (req , res)=>{
-  res.send("This is from sandeep Parmar  function ") ;
-}) ;
+/* routing order is important => mtlb ke baad jisse pehle match kar gya usko le jayega browser */
 
-app.use( "/username", (req , res)=>{
-  res.send("This is from username function ") ;
-}) ;
+// app.use("/user" , (req,res,next)=>{
+//   console.log("inside the route handler ") ;
+//   // const data = fs.read("data.txt") ;
+//   // if(data > 0)res.send(data) ;
+//    next() ;
+// } , (req ,res)=> {
+//   res.send("This response from route handler 2 ") ;
+// });
 
-app.use( "/hello" , (req , res) =>  {
-  res.send("This is from hello url function") ;
-}) ;
+// app.get( "/get", (req, res) => {
+//   res.send("This is from get api call.") ;
+// }) ;
 
-app.use("/data" ,  (req , res) =>  {
-  res.send("This is from data url  function") ;
-}) ;
+// app.post("/post" , (req , res) => {
+//   res.send( "This is from post api call ") ;
+// }) ;
 
-app.use((req , res) =>  {
-  res.send("This is from app.use function") ;
-}) ;
+// app.put("/put" , (req, res) => {
+//   res.send("This is from put api call ") ;
+// }) ;
+
+function logOriginalUrl (req, res, next) {
+  console.log('Request URL:', req.originalUrl)
+  next()
+}
+
+function logMethod (req, res, next) {
+  console.log('Request Type:', req.method)
+  next()
+}
+
+// const logStuff = [logOriginalUrl, logMethod]
+app.get("/user/:id/:name/:password",  (req, res, next) => {
+  console.log(req.params) ;
+  res.send('User Info this is the new thing which you learn') ;
+})
 
 app.listen(7777, () => {
   console.log("Hello this is from server side.") ;
