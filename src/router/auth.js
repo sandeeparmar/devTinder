@@ -1,0 +1,69 @@
+const express = require('express') ;
+const validateSignupData = require('../util/validate') ;
+const authRouter = express.Router() ; 
+const bcrypt = require('bcrypt' ) ;
+const User = require('../models/user') ;
+const userauth = require('../middleware/auth'); 
+
+authRouter.post("/signup" , async (req ,res)=>{
+  try{
+    validateSignupData(req) ; 
+    const {firstName , lastName , emailID , password} = req.body ;
+    const passwordHash  =  await bcrypt.hash(password , 10) ;
+    const user = new User({
+       firstName , lastName , emailID , password : passwordHash,
+    }) ;  
+    await user.save() ; // return a promise
+    res.send("registration is completed\n") ;
+  }
+  catch(err){
+    res.status(401).send("Sorry for ") ;
+  }
+});
+
+
+authRouter.post("/user/login" , async (req,res) => {
+  try{ 
+    const {emailID , password}  = req.body ;
+    const user = await User.findOne({emailID : emailID}) ;
+    
+    if(!user) {
+      throw new Error("Your are Not Register..") ;
+    } 
+
+    const userHashPassword = user.password ;
+    const isPasswordValid = await user.validatePassword(password) ;
+    
+    if(!isPasswordValid){
+      throw new Error("Check Email or Password please..") ;
+    }
+
+    else {
+      const token = await user.userToken() ;
+      res.cookie("token" , token ,{ expires: new Date(Date.now() + 900000)});
+      res.send("Welcome Back..") ;
+    }
+  } 
+  catch(err){
+    res.status(401).send("Something went wrong " + err.message) ;
+  } 
+}) ;
+
+
+authRouter.post('/logout' , userauth , async(req, res) =>{
+  try{
+    res.session.destroy((err) => {
+    if(err){
+      throw new Error("Logout Failed..");
+    }
+    res.clearCookie('session.id') ;
+    res.send("logout Successfully") ;
+  });
+ }
+ catch(err) {
+  res.status(501).send("Please Refresh it...") ;
+ }
+}) ;
+
+
+module.export = authRouter ;
