@@ -2,16 +2,20 @@ const express = require("express") ;
 const app = express() ; 
 const connectDB = require("./config/database") ;
 require("dotenv").config() ;
+const cookieParser = require('cookie-parser') ;
 
+app.use(express.json()) ;
+app.use(cookieParser()) ;
 
-const authRouter = require('./router/auth.js') ;
+const authRouter = require('./router/author.js') ;
 const profileRouter  = require('./router/profile.js') ;
 const requestRouter = require('./router/request.js') ;
+
+
 
 app.use("/" , authRouter) ;
 app.use("/" , profileRouter) ;
 app.use("/" , requestRouter) ;
-
 
 
 connectDB()

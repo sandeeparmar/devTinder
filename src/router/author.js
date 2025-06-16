@@ -1,9 +1,10 @@
 const express = require('express') ;
-const validateSignupData = require('../util/validate') ;
+const validateSignupData = require('../util/validate.js') ;
+
 const authRouter = express.Router() ; 
 const bcrypt = require('bcrypt' ) ;
 const User = require('../models/user') ;
-const userauth = require('../middleware/auth'); 
+
 
 authRouter.post("/signup" , async (req ,res)=>{
   try{
@@ -17,14 +18,16 @@ authRouter.post("/signup" , async (req ,res)=>{
     res.send("registration is completed\n") ;
   }
   catch(err){
-    res.status(401).send("Sorry for ") ;
+    res.status(401).send("Something Wrong" + err.message) ;
   }
 });
 
 
 authRouter.post("/user/login" , async (req,res) => {
   try{ 
-    const {emailID , password}  = req.body ;
+    console.log(req.body) ;
+    const {password , emailID}  = req.body ;
+    console.log(password) ;
     const user = await User.findOne({emailID : emailID}) ;
     
     if(!user) {
@@ -50,20 +53,17 @@ authRouter.post("/user/login" , async (req,res) => {
 }) ;
 
 
-authRouter.post('/logout' , userauth , async(req, res) =>{
+authRouter.post('/logout' , async(req, res) =>{
   try{
-    res.session.destroy((err) => {
-    if(err){
-      throw new Error("Logout Failed..");
-    }
-    res.clearCookie('session.id') ;
-    res.send("logout Successfully") ;
-  });
- }
+    res.cookie("token" , null  , {
+      expires : new Date(Date.now())  ,  
+    }) ; 
+    res.send("logout Successfully") ;  
+  }
  catch(err) {
-  res.status(501).send("Please Refresh it...") ;
+  res.status(501).send("Please Refresh it..." + err.message) ;
  }
 }) ;
 
 
-module.export = authRouter ;
+module.exports = authRouter ;

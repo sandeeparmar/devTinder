@@ -13,5 +13,4 @@ const validateSignupData = (req) => {
     throw  new Error("Password is not Strong") ;
    }
 } ;
-
 module.exports = validateSignupData ;
