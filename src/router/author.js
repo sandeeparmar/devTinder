@@ -1,9 +1,10 @@
 const express = require('express') ;
-const validateSignupData = require('../util/validate.js') ;
+const {validateSignupData} = require('../util/validate.js') ;
 
 const authRouter = express.Router() ; 
 const bcrypt = require('bcrypt' ) ;
 const User = require('../models/user') ;
+
 
 
 authRouter.post("/signup" , async (req ,res)=>{
@@ -22,14 +23,10 @@ authRouter.post("/signup" , async (req ,res)=>{
   }
 });
 
-
-authRouter.post("/user/login" , async (req,res) => {
+authRouter.post("/login" , async (req,res) => {
   try{ 
-    console.log(req.body) ;
     const {password , emailID}  = req.body ;
-    console.log(password) ;
     const user = await User.findOne({emailID : emailID}) ;
-    
     if(!user) {
       throw new Error("Your are Not Register..") ;
     } 
@@ -44,14 +41,13 @@ authRouter.post("/user/login" , async (req,res) => {
     else {
       const token = await user.userToken() ;
       res.cookie("token" , token ,{ expires: new Date(Date.now() + 900000)});
-      res.send("Welcome Back..") ;
+      res.json(user) ;
     }
   } 
   catch(err){
     res.status(401).send("Something went wrong " + err.message) ;
   } 
 }) ;
-
 
 authRouter.post('/logout' , async(req, res) =>{
   try{

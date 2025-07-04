@@ -8,7 +8,6 @@ const userSchema = mongoose.Schema({
      type : String ,
      required : true ,
      trim : true ,
-     uppercase : true ,
      minLength :3 ,
      maxLength :14 , 
      validate: {
@@ -46,7 +45,7 @@ const userSchema = mongoose.Schema({
         validator(value){
            return validator.isEmail(value)  ;
         },
-        message : "Email is not in correct form"
+        message : "Email is not in valid form"
     } 
    },
    password:{
@@ -73,6 +72,22 @@ const userSchema = mongoose.Schema({
     maxLength : 10 , 
     minLength :10 ,
      match: [/^[6-9]\d{9}$/, 'Invalid Indian mobile number']
+   },
+   about:{
+    type : String ,
+    index : true ,
+    default : "I am Software developer" ,
+    maxLength : 100 ,
+   } ,
+   photoUrl : {
+    type : String ,
+    index : true ,  
+    default : "https://media.licdn.com/dms/image/v2/D5603AQHIfL47sJeHmQ/profile-displayphoto-shrink_800_800/B56Za.fkayHUAc-/0/1746952671643?e=1756944000&v=beta&t=2Aohsxr-7zg9o4k4rS59GOwyxesE_dwXTspz5t_R2mY",
+    maxLength : 100000 ,
+   } ,
+   skills : {
+     type : Array ,
+     default :["JavaScript" , "C++" , "C"  , "Mern Stack"] ,
    }
 } ,{
   timestamps : true ,
@@ -91,6 +106,6 @@ userSchema.methods.validatePassword = async function(UserPassword){
   return validate ;
 } ;
 
-const UserModel = mongoose.model("user" , userSchema) ;
+const UserModel = mongoose.model("User" , userSchema) ;
 
 module.exports = UserModel ;
